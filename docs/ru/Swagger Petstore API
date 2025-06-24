@@ -1,1 +1,12 @@
+# doc_root/toc.yaml
+title: documentation
+href: index.yaml
+items:
+  - name: petstore-api-draft
+    include:
+      path: petstore-api-draft
+      includers:
+        - name: petstore-api-draft
+          input: petstore-api-draft.yaml
+      mode: link
 
