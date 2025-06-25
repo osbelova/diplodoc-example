@@ -2,21 +2,26 @@ openapi: 3.0.0
 info:
   version: 1.0.0
   title: Swagger Petstore Draft
+  description: Документация интернет-магазина для покупки и продажи домашних питомцев.
   license:
     name: MIT
 servers:
   - url: http://petstore.swagger.io/v1
+    description: Production server
+  - url: https://api-test.petstore.example.com/v1
+    description: Test server
 paths:
   /pets:
     get:
-      summary: 'todo'
+      summary: Получить список питомцев
+      description: Возвращает список питомцев.
       operationId: listPets
       tags:
         - pets
       parameters:
         - name: limit
           in: query
-          description: 'todo'
+          description: Максимальное количество питомцев, которое нужно вернуть (1–100).
           required: false
           schema:
             type: integer
@@ -24,10 +29,10 @@ paths:
             format: int32
       responses:
         '200':
-          description: 'todo'
+          description: Успешный ответ
           headers:
             x-next:
-              description: 'todo'
+              description: Токен для получения следующей страницы
               schema:
                 type: string
           content:
@@ -35,13 +40,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pets'
         default:
-          description: 'todo'
+          description: Ошибка при получении списка питомцев
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      summary: 'todo'
+      summary: Добавить нового питомца
+      description: Создаёт нового питомца с указанными атрибутами.
       operationId: createPets
       tags:
         - pets
@@ -51,18 +57,20 @@ paths:
             schema:
               $ref: '#/components/schemas/Pet'
         required: true
+        description: Объект нового питомца
       responses:
         '201':
-          description: 'todo'
+          description: Успешное создание питомца
         default:
-          description: 'todo'
+          description: Ошибка при создании питомца
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
   /pets/{petId}:
     get:
-      summary: 'todo'
+      summary: Получить питомца по ID
+      description: Возвращает информацию о питомце с заданным `petId`. Если питомец не найден, возвращает код-статус 404.
       operationId: showPetById
       tags:
         - pets
@@ -70,33 +78,45 @@ paths:
         - name: petId
           in: path
           required: true
-          description: 'todo'
+          description: Уникальный идентификатор питомца
           schema:
             type: string
       responses:
         '200':
-          description: 'todo'
+          description: Информация о питомце
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Pet'
         '400':
-          description: 'todo'
+          description: Неверный формат ID питомца
         '404':
-          description: 'todo'
+          description: Питомец с таким ID не найден
         default:
-          description: 'todo'
+          description: Внутренняя ошибка сервера
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 components:
+ securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
   schemas:
     Pet:
       type: object
       required:
         - id
         - name
+      description: |
+        Описание сущности «Питомец». 
+        Поля:
+        * id (integer, int64) — уникальный идентификатор питомца;
+        * name (string) — имя питомца;
+        * tag (string, optional) — метка (например, «кот» / «собака»).
       properties:
         id:
           type: integer
@@ -107,6 +127,7 @@ components:
           type: string
     Pets:
       type: array
+      description: Массив объектов Pet (максимум 100 элементов).
       maxItems: 100
       items:
         $ref: '#/components/schemas/Pet'
@@ -115,9 +136,12 @@ components:
       required:
         - code
         - message
+      description: Объект, описывающий ошибку API: код и текст сообщения.
       properties:
         code:
           type: integer
           format: int32
+          description: Числовой код ошибки (например, 400, 404, 500)
         message:
           type: string
+          description: Описание ошибки
